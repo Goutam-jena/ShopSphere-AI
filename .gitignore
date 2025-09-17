@@ -1,0 +1,49 @@
+# Node.js
+# -------------------------
+# Ignore the node_modules directory
+node_modules/
+# Ignore log files and other temporary files
+npm-debug.log*
+.DS_Store
+.env
+
+# MacOS
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Other temporary files
+.cache
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.idea/
+.vscode/
+
+# Build artifacts
+# -------------------------
+# Ignore build and distribution directories
+dist/
+build/
+coverage/
+
+# Frontend
+# -------------------------
+# Ignore common frontend build and cache directories
+.next/         # Next.js
+.nuxt/         # Nuxt.js
+.svelte-kit/   # SvelteKit
+out/           # Common build output
+
+# Ignore project-specific temporary files
+tmp/
+
+# Database connection file////
+backend/src/db/db.js
