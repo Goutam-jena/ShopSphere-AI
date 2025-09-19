@@ -27,16 +27,30 @@ class ProductService {
 
     async getAllProducts(req) {
         const filterQuery = {};
-
-    
+        // The original code only searched for the exact category ID provided.
+        // This new logic now finds all child and grandchild categories
+        // to confirm  that filtering by "Men" also returns products from
+        // "Men's T-Shirts", "Men's Jeans laptop 
         if (req.category) {
-            const category = await Category.findOne({ categoryId: req.category });
-            if (category) {
-                filterQuery.category = category._id;
+            const mainCategory = await Category.findOne({ categoryId: req.category });
+            if (mainCategory) {
+                // Find direct children
+                const childCategories = await Category.find({ parentCategory: mainCategory._id });
+                const childCategoryIds = childCategories.map(cat => cat._id);
+
+                const grandChildCategories = await Category.find({ parentCategory: { $in: childCategoryIds } });
+                const grandChildCategoryIds = grandChildCategories.map(cat => cat._id);
+
+              
+                const allApplicableCategoryIds = [mainCategory._id, ...childCategoryIds, ...grandChildCategoryIds];
+
+                
+                filterQuery.category = { $in: allApplicableCategoryIds };
             } else {
                 return { content: [], totalPages: 0, totalElements: 0 };
             }
         }
+
 
         if (req.color) { filterQuery.color = req.color; }
         if (req.minPrice) { filterQuery.sellingPrice = { $gte: req.minPrice }; }

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Product } from "../../types/productTypes";
 import { api } from "../../Config/Api";
+import { RootState } from "../Store";
 
 interface ProductState {
   product: Product | null;
@@ -24,6 +25,21 @@ const initialState: ProductState = {
 
 const API_URL = "/products";
 
+
+export const searchProduct = createAsyncThunk<Product[], string>(
+  "products/searchProduct",
+  async (query, { rejectWithValue }) => {
+    try {
+      const response = await api.get<Product[]>(`${API_URL}/search`, {
+        params: { q: query },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const fetchProductById = createAsyncThunk<Product, string>(
   "products/fetchProductById",
   async (productId, { rejectWithValue }) => {
@@ -43,13 +59,10 @@ export const getAllProducts = createAsyncThunk<any, {
   try {
     const response = await api.get<any>(API_URL, {
       params: {
-        
-        categoryId: params.category, 
-        color: params.color,
-        minPrice: params.minPrice,
-        maxPrice: params.maxPrice,
-        minDiscount: params.minDiscount,
-        sort: params.sort,
+      
+        //  The parameter 'categoryId has been corrected to 'category' to match the backend API.
+        //  We are now passing all `params` directly using the spread operator for cleaner code.
+        ...params,
         pageNumber: params.pageNumber || 0,
       },
     });
@@ -74,6 +87,16 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch product";
       })
+     
+      .addCase(searchProduct.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(searchProduct.fulfilled, (state, action: PayloadAction<Product[]>) => {
+        state.searchProduct = action.payload;
+        state.loading = false;
+      })
+      .addCase(searchProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to search products";
+      })
       .addCase(getAllProducts.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(getAllProducts.fulfilled, (state, action: PayloadAction<any>) => {
         state.paginatedProducts = action.payload;
@@ -89,3 +112,10 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
+
+
+export const selectProduct = (state: RootState) => state.products.product;
+export const selectProducts = (state: RootState) => state.products.products;
+export const selectPaginatedProducts = (state: RootState) => state.products.paginatedProducts;
+export const selectProductLoading = (state: RootState) => state.products.loading;
+export const selectProductError = (state: RootState) => state.products.error;
