@@ -11,10 +11,16 @@ const port = 4000;
 app.use(express.json());
 app.use(cors());
 
+const authRouters = require("./routers/authRouters.js");
+const productRouters = require("./routers/productRoutes.js");
+
+
 app.get("/", (req, res) => {
     res.send({ message: "Welcome to ShopSphere" });
 });
 
+app.use('/auth', authRouters);
+app.use("/products", productRouters);
 
 const startServer = async () => {
     try {
