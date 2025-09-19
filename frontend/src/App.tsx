@@ -1,15 +1,13 @@
-
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import CustomerRoutes from './routes/CustomerRoutes';
 
 function App() {
- 
-
   return (
-    <>
-      <h1>
-        hii
-      </h1>
-    </>
-  )
+    <Routes>
+      <Route path="/*" element={<CustomerRoutes />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
