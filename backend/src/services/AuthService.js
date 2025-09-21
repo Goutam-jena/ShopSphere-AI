@@ -3,7 +3,7 @@ const { sendVerificationEmail } = require('../utils/sendEmail');
 const generateOTP = require('../utils/generateOtp');
 const VerificationCode = require('../models/VerificationCode');
 const User = require('../models/User');
-const Cart = require('../models/cart'); // Note: filename is lowercase in your structure
+const Cart = require('../models/Cart.js');
 const jwtProvider = require('../utils/jwtProvider');
 const UserError = require('../exceptions/UserError');
 
@@ -45,6 +45,7 @@ class AuthService {
                 password: await bcrypt.hash(otp, 10)
             });
             const savedUser = await user.save();
+          
             const cart = new Cart({ user: savedUser._id });
             await cart.save();
         }
