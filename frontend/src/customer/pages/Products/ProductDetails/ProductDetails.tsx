@@ -1,13 +1,21 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../Redux Toolkit/Store';
 import { fetchProductById } from '../../../../Redux Toolkit/Customer/ProductSlice';
 import { Button } from '@mui/material';
+import { addItemToCart } from '../../../../Redux Toolkit/Customer/CartSlice';
 
 const ProductDetails = () => {
     const { productId } = useParams();
     const dispatch = useAppDispatch();
-    const { products } = useAppSelector(store => store);
+    const navigate = useNavigate();
+    const { products, auth } = useAppSelector(store => store);
+
+    const handleAddItemToCart = () => {
+        const req = { productId, size: 'M', quantity: 1 }; // Default size M, quantity 1
+        dispatch(addItemToCart({ jwt: auth.jwt, request: req }));
+        navigate('/cart');
+    };
 
     useEffect(() => {
         if (productId) {
@@ -33,7 +41,7 @@ const ProductDetails = () => {
                         <p className='text-lg line-through opacity-50'>₹{products.product.mrpPrice}</p>
                         <p className='text-lg text-green-600 font-semibold'>{products.product.discountPercent}% off</p>
                     </div>
-                    <Button variant="contained" color="primary" sx={{ px: '2rem', py: '1rem' }}>Add To Cart</Button>
+                    <Button onClick={handleAddItemToCart} variant="contained" color="primary" sx={{ px: '2rem', py: '1rem' }}>Add To Cart</Button>
                 </div>
             </div>
         </div>
