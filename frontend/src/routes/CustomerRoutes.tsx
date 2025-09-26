@@ -7,6 +7,7 @@ import ProductDetails from '../customer/pages/Products/ProductDetails/ProductDet
 import Cart from '../customer/pages/Cart/Cart.tsx'; // Added this line
 import AddressPage from '../customer/pages/Checkout/AddressPage';
 import Profile from '../customer/pages/Account/Profile';
+import PaymentSuccessHandler from '../customer/pages/Pyement/PaymentSuccessHandler';
 
 
 const CustomerRoutes = () => {
@@ -20,6 +21,8 @@ const CustomerRoutes = () => {
 
       <Route path='/checkout/address' element={<AddressPage />} /> 
       <Route path='/account/*' element={<Profile />} /> 
+      <Route path='/account/*' element={<Profile />} />
+      <Route path='/payment-success/:paymentOrderId' element={<PaymentSuccessHandler />} />
 
     </Routes>
   );

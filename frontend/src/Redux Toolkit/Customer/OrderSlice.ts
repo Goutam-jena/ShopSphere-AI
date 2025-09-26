@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Order, OrderState } from "../../types/orderTypes";
 import { Address } from "../../types/userTypes";
 import { api } from "../../Config/Api";
+import { ApiResponse } from "../../types/authTypes";
 
 const initialState: OrderState = {
   orders: [],
@@ -37,11 +38,28 @@ export const createOrder = createAsyncThunk<any, { address: Address; jwt: string
             { shippingAddress: address },
             { headers: { Authorization: `Bearer ${jwt}` } }
         );
-        // We will handle navigation after payment in a later commit
-        console.log("Order created, payment step next:", response.data);
+        
+        if (response.data.payment_link_url) {
+            window.location.href = response.data.payment_link_url;
+        }
+
         return response.data;
     } catch (error: any) {
         return rejectWithValue("Failed to create order");
+    }
+});
+
+export const paymentSuccess = createAsyncThunk<ApiResponse, { paymentId: string; jwt: string; paymentLinkId: string }, { rejectValue: string }>(
+    "orders/paymentSuccess",
+    async ({ paymentId, jwt, paymentLinkId }, { rejectWithValue }) => {
+    try {
+        const response = await api.get(`/api/payment/success`, {
+            headers: { Authorization: `Bearer ${jwt}` },
+            params: { razorpay_payment_link_id: paymentLinkId, paymentId: paymentId },
+        });
+        return response.data;
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data.message || "Failed to process payment");
     }
 });
 
@@ -62,10 +80,16 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(createOrder.fulfilled, (state, action: PayloadAction<any>) => {
-        state.paymentOrder = action.payload; // We will use this in the payment step
+        state.paymentOrder = action.payload;
         state.loading = false;
       })
       .addCase(createOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(paymentSuccess.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(paymentSuccess.fulfilled, (state) => { state.loading = false; })
+      .addCase(paymentSuccess.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
