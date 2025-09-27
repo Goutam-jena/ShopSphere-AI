@@ -27,30 +27,21 @@ class ProductService {
 
     async getAllProducts(req) {
         const filterQuery = {};
-        // The original code only searched for the exact category ID provided.
-        // This new logic now finds all child and grandchild categories
-        // to confirm  that filtering by "Men" also returns products from
-        // "Men's T-Shirts", "Men's Jeans laptop 
+
+    
         if (req.category) {
             const mainCategory = await Category.findOne({ categoryId: req.category });
             if (mainCategory) {
-                // Find direct children
                 const childCategories = await Category.find({ parentCategory: mainCategory._id });
                 const childCategoryIds = childCategories.map(cat => cat._id);
-
                 const grandChildCategories = await Category.find({ parentCategory: { $in: childCategoryIds } });
                 const grandChildCategoryIds = grandChildCategories.map(cat => cat._id);
-
-              
                 const allApplicableCategoryIds = [mainCategory._id, ...childCategoryIds, ...grandChildCategoryIds];
-
-                
                 filterQuery.category = { $in: allApplicableCategoryIds };
             } else {
                 return { content: [], totalPages: 0, totalElements: 0 };
             }
         }
-
 
         if (req.color) { filterQuery.color = req.color; }
         if (req.minPrice) { filterQuery.sellingPrice = { $gte: req.minPrice }; }
@@ -72,5 +63,52 @@ class ProductService {
 
         return { content: products, totalPages, totalElements };
     }
+    
+    
+    async createProduct(req, seller) {
+        const discountPercentage = Math.round(((req.mrpPrice - req.sellingPrice) / req.mrpPrice) * 100);
+        const category1 = await this.createOrGetCategory(req.category, 1);
+        const category2 = await this.createOrGetCategory(req.category2, 2, category1._id);
+        const category3 = await this.createOrGetCategory(req.category3, 3, category2._id);
+
+        const product = new Product({
+            seller: seller._id,
+            category: category3._id,
+            title: req.title,
+            color: req.color,
+            description: req.description,
+            discountPercent: discountPercentage,
+            sellingPrice: req.sellingPrice,
+            images: req.images,
+            mrpPrice: req.mrpPrice,
+            sizes: req.sizes,
+        });
+        return await product.save();
+    }
+
+    async createOrGetCategory(categoryId, level, parentId = null) {
+        let category = await Category.findOne({ categoryId });
+        if (!category) {
+            category = new Category({ categoryId, level, parentCategory: parentId });
+            await category.save();
+        }
+        return category;
+    }
+
+    async deleteProduct(productId) {
+        await Product.findByIdAndDelete(productId);
+    }
+
+    async updateProduct(productId, updatedProductData) {
+        const product = await Product.findByIdAndUpdate(productId, { $set: updatedProductData }, { new: true });
+        if (!product) throw new ProductError("Product not found");
+        return product;
+    }
+
+    async getProductBySellerId(sellerId) {
+        return await Product.find({ seller: sellerId });
+    }
+    
 }
+
 module.exports = new ProductService();
