@@ -6,6 +6,9 @@ const connectDB = require('./config/db.js');
 const cors = require('cors');
 const cartRouters = require("./routers/cartRoutes.js");
 const orderRouters = require("./routers/orderRoutes.js");
+const orderRouters = require("./routers/orderRoutes.js");
+const sellerRouters = require("./routers/sellerRoutes.js");
+
 
 
 
@@ -16,6 +19,8 @@ app.use(express.json());
 app.use(cors());
 app.use("/api/cart", cartRouters);
 app.use("/api/orders", orderRouters);
+app.use("/api/orders", orderRouters);
+app.use("/sellers", sellerRouters);
 
 const authRouters = require("./routers/authRouters.js");
 const productRouters = require("./routers/productRoutes.js");
