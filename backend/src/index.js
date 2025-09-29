@@ -8,6 +8,8 @@ const cartRouters = require("./routers/cartRoutes.js");
 const orderRouters = require("./routers/orderRoutes.js");
 const orderRouters = require("./routers/orderRoutes.js");
 const sellerRouters = require("./routers/sellerRoutes.js");
+const sellerProductRouters = require("./routers/sellerProductRoutes.js");
+const sellerOrderRouters = require("./routers/sellerOrderRoutes.js");
 
 
 
@@ -21,6 +23,8 @@ app.use("/api/cart", cartRouters);
 app.use("/api/orders", orderRouters);
 app.use("/api/orders", orderRouters);
 app.use("/sellers", sellerRouters);
+app.use("/api/sellers/product", sellerProductRouters);
+app.use("/api/seller/orders", sellerOrderRouters);
 
 const authRouters = require("./routers/authRouters.js");
 const productRouters = require("./routers/productRoutes.js");
