@@ -1,9 +1,10 @@
-const Seller = require("../models/Seller");
-const Address = require("../models/Address");
+const Seller = require("../models/seller.js");
+const Address = require("../models/Address.js");
 const bcrypt = require("bcrypt");
-const SellerError = require("../exceptions/SellerError");
-const User = require("../models/User");
-const UserRoles = require("../domain/UserRole");
+const SellerError = require("../exceptions/SellerError.js");
+const User = require("../models/User.js");
+const UserRoles = require("../domain/UserRole.js");
+const jwtProvider = require("../utils/jwtProvider.js");
 
 class SellerService {
     async createSeller(sellerData) {
@@ -46,5 +47,22 @@ class SellerService {
 
         return await newSeller.save();
     }
+
+    async getSellerProfile(jwt) {
+        const email = jwtProvider.getEmailFromJwt(jwt);
+        return this.getSellerByEmail(email);
+    }
+
+    async getSellerByEmail(email) {
+        const seller = await Seller.findOne({ email }).populate("pickupAddress").populate("user");
+        if (!seller) throw new SellerError("Seller not found");
+        return seller;
+    }
+
+    async updateSeller(existingSeller, sellerData) {
+        return await Seller.findByIdAndUpdate(existingSeller._id, sellerData, { new: true })
+            .populate("pickupAddress").populate("user");
+    }
+   
 }
 module.exports = new SellerService();

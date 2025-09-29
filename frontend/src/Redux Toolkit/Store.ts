@@ -6,6 +6,10 @@ import CartSlice from "./Customer/CartSlice";
 import UserSlice from "./Customer/UserSlice";
 import OrderSlice from "./Customer/OrderSlice";
 import sellerAuthenticationSlice from "./Seller/sellerAuthenticationSlice";
+import sellerSlice from "./Seller/sellerSlice";
+import revenueChartSlice from "./Seller/revenueChartSlice";
+import sellerOrderSlice from "./Seller/sellerOrderSlice";
+
 
 
 
@@ -20,6 +24,10 @@ const rootReducer = combineReducers({
 
  
   sellerAuth: sellerAuthenticationSlice,
+  sellerOrder: sellerOrderSlice,
+  sellers: sellerSlice, 
+  revenueChart: revenueChartSlice, 
+  
   
 
 
