@@ -21,9 +21,9 @@ const rootReducer = combineReducers({
   cart: CartSlice,
   user: UserSlice,
   orders: OrderSlice,
-  admin: AdminSlice,
+
   adminCoupons: AdminCouponSlice,
-  adminDeals: DealSlice,
+
 
 
 
