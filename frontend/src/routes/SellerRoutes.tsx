@@ -5,6 +5,8 @@ import Products from '../seller/pages/Products/Products'
 import AddProductForm from '../seller/pages/Products/AddProductForm'
 import Orders from '../seller/pages/Orders/Orders';
 import Profile from '../seller/pages/Account/Profile';
+import Payment from '../seller/pages/Payment/Payment';
+import TransactionTable from '../seller/pages/Payment/TransactionTable';
 
 const SellerRoutes = () => {
   return (
@@ -15,6 +17,8 @@ const SellerRoutes = () => {
       <Route path='/add-product' element={<AddProductForm />} />
       <Route path='/orders' element={<Orders />} />
       <Route path='/account' element={<Profile />} />
+      <Route path='/payment' element={<Payment />} />
+      <Route path='/transactions' element={<TransactionTable />} />
 
 
     </Routes>
