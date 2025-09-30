@@ -9,6 +9,8 @@ import sellerAuthenticationSlice from "./Seller/sellerAuthenticationSlice";
 import sellerSlice from "./Seller/sellerSlice";
 import revenueChartSlice from "./Seller/revenueChartSlice";
 import sellerOrderSlice from "./Seller/sellerOrderSlice";
+import AdminCouponSlice from "./Admin/AdminCouponSlice";
+
 
 
 
@@ -19,6 +21,9 @@ const rootReducer = combineReducers({
   cart: CartSlice,
   user: UserSlice,
   orders: OrderSlice,
+  admin: AdminSlice,
+  adminCoupons: AdminCouponSlice,
+  adminDeals: DealSlice,
 
 
 

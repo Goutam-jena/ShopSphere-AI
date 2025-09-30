@@ -10,7 +10,8 @@ const orderRouters = require("./routers/orderRoutes.js");
 const sellerRouters = require("./routers/sellerRoutes.js");
 const sellerProductRouters = require("./routers/sellerProductRoutes.js");
 const sellerOrderRouters = require("./routers/sellerOrderRoutes.js");
-
+const homeCategoryRoutes = require("./routers/homeCategoryRoutes.js");
+const couponRouters = require("./routers/couponRoutes.js");
 
 
 
@@ -25,6 +26,15 @@ app.use("/api/orders", orderRouters);
 app.use("/sellers", sellerRouters);
 app.use("/api/sellers/product", sellerProductRouters);
 app.use("/api/seller/orders", sellerOrderRouters);
+app.use("/home", homeCategoryRoutes);
+app.use("/api/coupons", couponRouters);
+
+
+
+
+
+
+
 
 const authRouters = require("./routers/authRouters.js");
 const productRouters = require("./routers/productRoutes.js");
