@@ -63,6 +63,27 @@ class SellerService {
         return await Seller.findByIdAndUpdate(existingSeller._id, sellerData, { new: true })
             .populate("pickupAddress").populate("user");
     }
+async getAllSellers(status) {
+        const query = status ? { accountStatus: status } : {};
+        return await Seller.find(query).populate("user");
+    }
+
+    async updateSellerAccountStatus(sellerId, status) {
+        const seller = await this.getSellerById(sellerId);
+        seller.accountStatus = status;
+        return await seller.save();
+    }
+
+
+
+
+
+
+
+
+
+
+
    
 }
 module.exports = new SellerService();
