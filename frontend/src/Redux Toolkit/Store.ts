@@ -10,7 +10,8 @@ import sellerSlice from "./Seller/sellerSlice";
 import revenueChartSlice from "./Seller/revenueChartSlice";
 import sellerOrderSlice from "./Seller/sellerOrderSlice";
 import AdminCouponSlice from "./Admin/AdminCouponSlice";
-
+import DealSlice from "./Admin/DealSlice";
+import AdminSlice from "./Admin/AdminSlice";
 
 
 
@@ -23,6 +24,9 @@ const rootReducer = combineReducers({
   orders: OrderSlice,
 
   adminCoupons: AdminCouponSlice,
+   adminDeals: DealSlice,
+  admin: AdminSlice,
+  
 
 
 
@@ -34,7 +38,7 @@ const rootReducer = combineReducers({
   revenueChart: revenueChartSlice, 
   
   
-
+  
 
 
 

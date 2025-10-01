@@ -12,6 +12,10 @@ const sellerProductRouters = require("./routers/sellerProductRoutes.js");
 const sellerOrderRouters = require("./routers/sellerOrderRoutes.js");
 const homeCategoryRoutes = require("./routers/homeCategoryRoutes.js");
 const couponRouters = require("./routers/couponRoutes.js");
+const homeCategoryRoutes = require("./routers/homeCategoryRoutes.js"); 
+const dealRoutes = require("./routers/dealRoutes.js"); 
+
+
 
 
 
@@ -28,6 +32,9 @@ app.use("/api/sellers/product", sellerProductRouters);
 app.use("/api/seller/orders", sellerOrderRouters);
 app.use("/home", homeCategoryRoutes);
 app.use("/api/coupons", couponRouters);
+app.use("/api/coupons", couponRouters);
+app.use("/home", homeCategoryRoutes);     
+app.use("/admin/deals", dealRoutes);  
 
 
 
