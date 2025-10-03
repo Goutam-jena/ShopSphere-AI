@@ -14,6 +14,8 @@ const homeCategoryRoutes = require("./routers/homeCategoryRoutes.js");
 const couponRouters = require("./routers/couponRoutes.js");
 const homeCategoryRoutes = require("./routers/homeCategoryRoutes.js"); 
 const dealRoutes = require("./routers/dealRoutes.js"); 
+const couponRouters = require("./routers/couponRoutes.js");
+const wishlistRouters = require("./routers/wishlistRoutes.js");
 
 
 
@@ -35,6 +37,8 @@ app.use("/api/coupons", couponRouters);
 app.use("/api/coupons", couponRouters);
 app.use("/home", homeCategoryRoutes);     
 app.use("/admin/deals", dealRoutes);  
+app.use("/api/coupons", couponRouters);
+app.use("/api/wishlist", wishlistRouters);
 
 
 

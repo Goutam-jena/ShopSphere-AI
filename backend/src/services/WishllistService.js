@@ -1,0 +1,42 @@
+const Wishlist = require('../models/Wishlist');
+
+class WishlistService {
+    async createWishlist(user) {
+        try {
+            const wishlist = new Wishlist({ user: user._id, products: [] });
+            return await wishlist.save();
+        } catch (error) {
+            throw new Error(`Error creating wishlist: ${error.message}`);
+        }
+    }
+
+    async getWishlistByUserId(user) {
+        try {
+            let wishlist = await Wishlist.findOne({ user: user._id }).populate("products");
+            if (!wishlist) {
+                wishlist = await this.createWishlist(user);
+            }
+            return wishlist;
+        } catch (error) {
+            throw new Error(`Error fetching wishlist: ${error.message}`);
+        }
+    }
+
+    async addProductToWishlist(user, product) {
+        try {
+            const wishlist = await this.getWishlistByUserId(user);
+            const productIndex = wishlist.products.findIndex((p) => p._id.toString() === product._id.toString());
+            
+            if (productIndex > -1) {
+                wishlist.products.splice(productIndex, 1); // Remove if exists
+            } else {
+                wishlist.products.push(product._id); // Add if not exists
+            }
+
+            return await Wishlist.findByIdAndUpdate(wishlist._id, wishlist, { new: true }).populate("products");
+        } catch (error) {
+            throw new Error(`Error updating wishlist: ${error.message}`);
+        }
+    }
+}
+module.exports = new WishlistService();

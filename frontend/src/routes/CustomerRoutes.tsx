@@ -8,6 +8,10 @@ import Cart from '../customer/pages/Cart/Cart.tsx'; // Added this line
 import AddressPage from '../customer/pages/Checkout/AddressPage';
 import Profile from '../customer/pages/Account/Profile';
 import PaymentSuccessHandler from '../customer/pages/Pyement/PaymentSuccessHandler';
+import Wishlist from '../customer/pages/Wishlist/Wishlist';
+import NotFound from '../customer/pages/NotFound/NotFound';
+
+
 
 
 const CustomerRoutes = () => {
@@ -23,6 +27,8 @@ const CustomerRoutes = () => {
       <Route path='/account/*' element={<Profile />} /> 
       <Route path='/account/*' element={<Profile />} />
       <Route path='/payment-success/:paymentOrderId' element={<PaymentSuccessHandler />} />
+      <Route path='/wishlist' element={<Wishlist />} /> {/* Add this line */}
+      <Route path='*' element={<NotFound />} />
 
     </Routes>
   );
