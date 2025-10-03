@@ -4,7 +4,7 @@ import Home from '../customer/pages/Home/Home.tsx';
 import Auth from '../customer/pages/Auth/Auth.tsx';
 import Products from '../customer/pages/Products/Products.tsx';
 import ProductDetails from '../customer/pages/Products/ProductDetails/ProductDetails.tsx';
-import Cart from '../customer/pages/Cart/Cart.tsx'; // Added this line
+import Cart from '../customer/pages/Cart/Cart.tsx'; 
 import AddressPage from '../customer/pages/Checkout/AddressPage';
 import Profile from '../customer/pages/Account/Profile';
 import PaymentSuccessHandler from '../customer/pages/Pyement/PaymentSuccessHandler';
