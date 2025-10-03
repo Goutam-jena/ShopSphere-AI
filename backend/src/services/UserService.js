@@ -1,0 +1,34 @@
+const User = require('../models/User');
+const jwtProvider = require('../utils/jwtProvider');
+const UserError = require('../exceptions/UserError');
+
+class UserService {
+
+    async findUserProfileByJwt(jwt) {
+        const email = jwtProvider.getEmailFromJwt(jwt);
+        const user = await User.findOne({ email }).populate("addresses");
+        if (!user) {
+            throw new UserError(`User does not exist with email ${email}`);
+        }
+        return user;
+    }
+
+    async updateProfilePicture(userId, imageUrl, publicId) {
+        try {
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { $set: { profilePic: { url: imageUrl, public_id: publicId } } },
+                { new: true }
+            ).populate("addresses");
+
+            if (!updatedUser) {
+                throw new UserError("User not found");
+            }
+            return updatedUser;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+}
+
+module.exports = new UserService();
