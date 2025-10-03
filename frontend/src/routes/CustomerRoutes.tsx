@@ -10,11 +10,17 @@ import Profile from '../customer/pages/Account/Profile';
 import PaymentSuccessHandler from '../customer/pages/Pyement/PaymentSuccessHandler';
 import Wishlist from '../customer/pages/Wishlist/Wishlist';
 import NotFound from '../customer/pages/NotFound/NotFound';
+import HomeChatBot from '../customer/pages/ChatBot/HomeChatBot';
 
 
 
 
 const CustomerRoutes = () => {
+
+const location = useLocation();  
+  const isProductPage = location.pathname.startsWith('/product-details');
+
+
   return (
     <Routes>
       <Route path='/' element={<Home />} />
@@ -29,6 +35,7 @@ const CustomerRoutes = () => {
       <Route path='/payment-success/:paymentOrderId' element={<PaymentSuccessHandler />} />
       <Route path='/wishlist' element={<Wishlist />} /> {/* Add this line */}
       <Route path='*' element={<NotFound />} />
+       {!isProductPage && <HomeChatBot />}
 
     </Routes>
   );
