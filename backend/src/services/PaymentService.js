@@ -1,6 +1,7 @@
 const PaymentOrder = require('../models/PaymentOrder');
 const Order = require('../models/Order');
 const PaymentStatus = require('../domain/PaymentStatus');
+const PaymentOrderStatus = require('../domain/PaymentOrderStatus');
 const razorpay = require("../config/razorpayClient");
 const OrderStatus = require('../domain/OrderStatus');
 
@@ -32,9 +33,18 @@ class PaymentService {
         }
     }
 
-    async processSuccessfulPayment(paymentOrder, paymentId) {
-        if (paymentOrder.status === 'PENDING') {
+    async getPaymentOrderByPaymentLinkId(paymentLinkId) {
+        const paymentOrder = await PaymentOrder.findOne({ paymentLinkId: paymentLinkId });
+        if (!paymentOrder) {
+            throw new Error('Payment order not found with provided payment link id');
+        }
+        return paymentOrder;
+    }
+
+    async proceedPaymentOrder(paymentOrder, paymentId) {
+        if (paymentOrder.status === PaymentOrderStatus.PENDING) {
             const payment = await razorpay.payments.fetch(paymentId);
+
             if (payment.status === 'captured') {
                 await Promise.all(paymentOrder.orders.map(async (orderId) => {
                     await Order.findByIdAndUpdate(orderId, {
@@ -42,14 +52,18 @@ class PaymentService {
                         orderStatus: OrderStatus.PLACED
                     });
                 }));
-                paymentOrder.status = 'SUCCESS';
+
+                paymentOrder.status = PaymentOrderStatus.SUCCESS;
                 await paymentOrder.save();
                 return true;
+            } else {
+                paymentOrder.status = PaymentOrderStatus.FAILED;
+                await paymentOrder.save();
+                return false;
             }
-            paymentOrder.status = 'FAILED';
-            await paymentOrder.save();
         }
         return false;
     }
 }
+
 module.exports = new PaymentService();

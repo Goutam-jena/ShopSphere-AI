@@ -3,6 +3,6 @@ const router = express.Router();
 const { paymentSuccessHandler } = require('../controllers/paymentController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-router.get('/success', authMiddleware, paymentSuccessHandler);
+router.get('/:paymentId', authMiddleware, paymentSuccessHandler);
 
 module.exports = router;
