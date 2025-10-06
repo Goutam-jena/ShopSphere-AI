@@ -12,6 +12,9 @@ import sellerOrderSlice from "./Seller/sellerOrderSlice";
 import AdminCouponSlice from "./Admin/AdminCouponSlice";
 import DealSlice from "./Admin/DealSlice";
 import AdminSlice from "./Admin/AdminSlice";
+import CustomerSlice from "./Customer/Customer/CustomerSlice";
+import AiChatBotSlice from "./Customer/AiChatBotSlice";
+
 
 
 
@@ -25,6 +28,7 @@ const rootReducer = combineReducers({
 
   adminCoupons: AdminCouponSlice,
    adminDeals: DealSlice,
+   aiChatBot: AiChatBotSlice,
   admin: AdminSlice,
   
 
