@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
-const DataInitializationService = require('../services/DataInitializationService'); // Import
+const DataInitializationService = require('../services/DataInitializationService');
 
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URL);
     console.log(`MongoDB connected: ${conn.connection.host}`);
+
     
     DataInitializationService.initializeAdminUser(); 
   } catch (error) {
