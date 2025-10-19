@@ -1,32 +1,39 @@
-import React from 'react';
-import { Button } from '@mui/material';
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material'
+import React from 'react'
 import { Address } from '../../../types/userTypes';
-import { useAppDispatch } from '../../../Redux Toolkit/Store';
-import { createOrder } from '../../../Redux Toolkit/Customer/OrderSlice';
-import { useNavigate } from 'react-router-dom';
 
-const AddressCard = ({ address }: { address: Address }) => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const jwt = localStorage.getItem('jwt');
+interface AddressCardProps {
+    value: number;
+    selectedValue: number;
+    handleChange: (e: any) => void;
+    item: Address
+}
+const AddressCard: React.FC<AddressCardProps> = ({ value, selectedValue, handleChange, item }) => {
 
-  const handleSelectAddress = () => {
-    if (jwt) {
-      dispatch(createOrder({ address, jwt, navigate }));
-    }
-  };
 
-  return (
-    <div className='p-5 shadow-lg border rounded-md space-y-3'>
-      <p className='font-semibold'>{address.name}</p>
-      <p>{`${address.address}, ${address.locality}, ${address.city}, ${address.state} - ${address.pinCode}`}</p>
-      <div className='space-y-1'>
-        <p className='font-semibold'>Phone Number</p>
-        <p>{address.mobile}</p>
-      </div>
-      <Button variant="contained" onClick={handleSelectAddress}>Deliver Here</Button>
-    </div>
-  );
-};
+    return (
+        <div className='p-5 border rounded-md flex '>
+            <div>
+                <Radio
+                    checked={value == selectedValue}
+                    onChange={handleChange}
+                    value={value}
+                    name="radio-buttons"
+                    inputProps={{ 'aria-label': 'B' }}
+                />
+            </div>
 
-export default AddressCard;
+            <div className='space-y-3 pt-3'>
+                <h1>{item.name}</h1>
+                <p className='w-[320px]'>
+                    {item.address},
+                    {item.locality},
+                    {item.city},
+                    {item.state} - {item.pinCode}</p>
+                <p><strong>Mobile : </strong> {item.mobile}</p>
+            </div>
+        </div>
+    )
+}
+
+export default AddressCard

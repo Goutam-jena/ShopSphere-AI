@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { askProductQuestion } from "../../../Redux Toolkit/Customer/AiChatBotSlice";
@@ -9,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 interface ChatBotProps {
     handleClose: (e: any) => void;
-    productId?: string;
+    productId?: number;
 }
 
 const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
@@ -27,7 +29,7 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
             question: prompt
         }));
 
-        setPrompt(""); 
+        setPrompt(""); // <-- FIX 1: Add this line to clear the input state
     };
 
     const handlePromptChange = (e: any) => {
