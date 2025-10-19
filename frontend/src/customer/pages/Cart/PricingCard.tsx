@@ -1,40 +1,48 @@
-import { Button, Divider } from '@mui/material';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Button, Divider } from "@mui/material";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  sumCartItemMrpPrice,
+  sumCartItemSellingPrice,
+} from "../../../util/cartCalculator";
+import { useAppSelector } from "../../../Redux Toolkit/Store";
 
-const PricingCard = ({ cart }: any) => {
+const PricingCard = ({ showBuyButton, SubmitButton }: any) => {
   const navigate = useNavigate();
-  const handleCheckout = () => {
-    navigate('/checkout/address');
-  };
+  const { cart, auth } = useAppSelector((store) => store);
   return (
-    <div className='p-5 shadow-lg rounded-md border'>
-      <p className='uppercase font-bold opacity-60 pb-4'>Price Details</p>
-      <Divider />
-      <div className='space-y-3 font-semibold'>
-        <div className='flex justify-between pt-3 text-black'>
-          <span>Price ({cart.cartItems.length} items)</span>
-          <span>₹{cart.totalMrpPrice}</span>
+    <div>
+      <div className="space-y-3 p-5">
+        <div className="flex justify-between items-center">
+          <span>Subtotal</span>
+          <span>₹ {cart.cart?.totalMrpPrice}</span>
         </div>
-        <div className='flex justify-between pt-3'>
+        <div className="flex justify-between items-center">
           <span>Discount</span>
-          <span className='text-green-600'>-₹{cart.discount}</span>
+          <span>
+            ₹{" "}
+            {sumCartItemMrpPrice(cart.cart?.cartItems || []) -
+              sumCartItemSellingPrice(cart.cart?.cartItems || [])}
+          </span>
         </div>
-        <div className='flex justify-between pt-3'>
-          <span>Delivery Charges</span>
-          <span className='text-green-600'>FREE</span>
+        <div className="flex justify-between items-center">
+          <span>Shipping</span>
+          <span>₹ 79</span>
         </div>
-        <Divider />
-        <div className='flex justify-between pt-3 font-bold'>
-          <span>Total Amount</span>
-          <span className='text-green-600'>₹{cart.totalSellingPrice}</span>
+        <div className="flex justify-between items-center">
+          <span>plateform fee</span>
+          <span className="text-teal-600">Free</span>
         </div>
       </div>
-      <Button onClick={handleCheckout} variant='contained' sx={{ mt: '2rem', width: '100%', py: '0.7rem' }}>
-        Checkout
-      </Button>
+      <Divider />
+
+      <div className="font-medium px-5 py-2 flex justify-between items-center">
+        <span>Total</span>
+        <span>₹ {cart.cart?.totalSellingPrice}</span>
+      </div>
     </div>
   );
-};
+ };
+
 
 export default PricingCard;
