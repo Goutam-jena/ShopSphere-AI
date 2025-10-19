@@ -28,12 +28,13 @@ const couponSchema = new Schema({
         default: true,
     },
     usedByUsers: [{
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId, 
         ref: 'User',
     }],
 }, {
-    timestamps: true,
+    timestamps: true, 
 });
 
 const Coupon = mongoose.model('Coupon', couponSchema);
+
 module.exports = Coupon;

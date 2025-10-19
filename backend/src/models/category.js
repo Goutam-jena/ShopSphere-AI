@@ -7,13 +7,13 @@ const categorySchema = new Schema({
     },
     categoryId: {
         type: String,
-        unique: true,
-        required: true,
+        unique: true, 
+        required: true, // Making categoryId required
     },
     parentCategory: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId, 
         ref: 'Category',
-        default: null,
+        default: null, 
     },
     level: {
         type: Number,
@@ -24,4 +24,5 @@ const categorySchema = new Schema({
 });
 
 const Category = mongoose.model('Category', categorySchema);
+
 module.exports = Category;
