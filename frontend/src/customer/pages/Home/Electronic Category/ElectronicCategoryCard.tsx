@@ -1,16 +1,19 @@
-import React from 'react';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
-const ElectronicCategoryCard = ({ item }: any) => {
+
+const ElectronicCategoryCard = ({item}:any) => {
+  const navigate=useNavigate();
+
   return (
-    <div className='cursor-pointer flex flex-col items-center bg-white rounded-lg shadow-lg overflow-hidden w-[15rem] mx-3'>
-      <div className='h-[13rem] w-[10rem]'>
-        <img className='object-cover object-top w-full h-full' src={item.image} alt={item.name} />
-      </div>
-      <div className='p-4'>
-        <h3 className='text-lg font-medium text-gray-900'>{item.name}</h3>
-      </div>
+    <div onClick={()=>navigate(`/products/${item.categoryId}`)} className='flex w-20 flex-col items-center gap-3 cursor-pointer'>
+        <img className='object-contain h-10' src={item.image} alt={item.name} />
+        <h2 className='font-semibold text-sm'>{item.name}</h2>
+  
     </div>
-  );
-};
+  )
+}
 
-export default ElectronicCategoryCard;
+export default ElectronicCategoryCard
+
+

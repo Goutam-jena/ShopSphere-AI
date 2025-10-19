@@ -1,44 +1,95 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch } from '../../../Redux Toolkit/Store';
-import { paymentSuccess } from '../../../Redux Toolkit/Customer/OrderSlice';
-import { Alert, AlertTitle } from '@mui/material';
+
+
+import React, { useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { paymentSuccess } from "../../../Redux Toolkit/Customer/OrderSlice";
+import { fetchUserCart } from "../../../Redux Toolkit/Customer/CartSlice";
+import { 
+    Alert, 
+    AlertTitle, 
+    Backdrop, 
+    Button, 
+    CircularProgress, 
+    Grid, 
+    Typography 
+} from "@mui/material";
 
 const PaymentSuccessHandler = () => {
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const location = useLocation();
+    // --- FIX #1: Correctly read all necessary IDs from the URL ---
     const { paymentOrderId } = useParams();
+    const location = useLocation();
+    const urlParams = new URLSearchParams(location.search);
+    const paymentId = urlParams.get("razorpay_payment_id");
+    const paymentLinkId = urlParams.get("razorpay_payment_link_id");
+    // --- END OF FIX #1 ---
+
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { orders } = useAppSelector((store) => store);
+    const jwt = localStorage.getItem("jwt");
 
     useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const paymentId = searchParams.get('razorpay_payment_id');
-        const paymentLinkId = searchParams.get('razorpay_payment_link_id');
-        const jwt = localStorage.getItem('jwt');
-
         if (paymentId && paymentLinkId && jwt) {
-            dispatch(paymentSuccess({
-                paymentId,
-                paymentLinkId,
-                jwt
-            }));
+            // --- FIX #2: Pass the correct IDs to the backend ---
+            const data = { paymentId, paymentLinkId, jwt };
+            
+            const processPayment = async () => {
+                try {
+                    await dispatch(paymentSuccess(data)).unwrap();
+                    dispatch(fetchUserCart(jwt)); // Re-fetch the cart after success
+                } catch (error) {
+                    console.error("CRITICAL ERROR caught in PaymentSuccessHandler:", error);
+                }
+            };
+            processPayment();
+            // --- END OF FIX #2 ---
         }
-        
-        // Redirect to order history after a short delay
-        const timer = setTimeout(() => {
-            navigate('/account/orders');
-        }, 3000);
-
-        return () => clearTimeout(timer);
-
-    }, [dispatch, location, navigate, paymentOrderId]);
+    }, [dispatch, paymentId, paymentLinkId, jwt]);
 
     return (
-        <div className='h-screen flex flex-col items-center justify-center'>
-            <Alert severity="success" sx={{width: 'fit-content'}}>
-                <AlertTitle>Payment Successful</AlertTitle>
-                Your order has been placed successfully. You are being redirected to your order history.
-            </Alert>
+        <div className="min-h-[90vh] flex flex-col justify-center items-center px-5 lg:px-20">
+            {orders.loading ? (
+                <Backdrop
+                    sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={orders.loading}
+                >
+                    <CircularProgress color="inherit" />
+                    <Typography sx={{ ml: 2 }}>Finalizing your order...</Typography>
+                </Backdrop>
+            ) : (
+                <div className="w-full max-w-2xl text-center">
+                    <Alert
+                        variant="filled"
+                        severity="success"
+                        sx={{ mb: 6, width: "100%", textAlign: 'left' }}
+                    >
+                        <AlertTitle>Your order is placed successfully!</AlertTitle>
+                        Thank you for shopping with us.
+                    </Alert>
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <div className="space-y-4">
+                                <Button
+                                    onClick={() => navigate("/account/order")}
+                                    variant="contained"
+                                    fullWidth
+                                >
+                                    View My Orders
+                                </Button>
+                                <Button
+                                    onClick={() => navigate("/")}
+                                    variant="outlined"
+                                    fullWidth
+                                >
+                                    Continue Shopping
+                                </Button>
+                            </div>
+                        </Grid>
+                    </Grid>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,16 +1,58 @@
-import React from 'react';
-import DealCard from './DealCard';
-import { Deal } from '../../../../types/dealTypes';
+import React from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import DealCard from "./DealCard";
+import { useAppSelector } from "../../../../Redux Toolkit/Store";
+import { Deal } from "../../../../types/dealTypes";
 
-const Deals = ({ deals }: { deals: Deal[] }) => {
-  return (
-    <div className='p-5'>
-      <h1 className='text-2xl font-bold text-gray-800 py-5'>Deals Of The Day</h1>
-      <div className='flex flex-wrap items-center justify-center gap-5'>
-        {deals.map((deal) => <DealCard key={deal._id} deal={deal} />)}
-      </div>
-    </div>
-  );
-};
+export default function DealSlider() {
+    const {homePage}=useAppSelector(store=>store)
+    var settings = {
+        dots: true,
+        infinite: true,
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        autoplay: true,
+        speed: 2000,
+        autoplaySpeed: 2000,
+        cssEase: "linear",
+        responsive: [
+            {
+              breakpoint: 1024, // Large screen
+              settings: {
+                slidesToShow: 4,
+                slidesToScroll: 1,
+              },
+            },
+            {
+              breakpoint: 768, // Tablet
+              settings: {
+                slidesToShow: 2,
+                slidesToScroll: 1,
+              },
+            },
+            {
+              breakpoint: 480, // Mobile
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+              },
+            },
+          ],
 
-export default Deals;
+    };
+    return (
+        <div className=" py-5 lg:px-20">
+            <div className="slide-container  ">
+                <Slider {...settings}>
+                    {homePage.homePageData?.deals?.map((item:Deal) => <div className="border flex flex-col items-center justify-center">
+                        <DealCard deal={item}/>
+                    </div>)}
+
+                </Slider>
+            </div>
+        </div>
+
+    );
+}

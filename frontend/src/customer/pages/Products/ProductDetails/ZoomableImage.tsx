@@ -1,54 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, MouseEvent } from 'react';
 
-const ZoomableImage = ({ src, alt }: { src: string, alt: string }) => {
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [showZoom, setShowZoom] = useState(false);
-    const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+interface ZoomableImageProps {
+  src: string | undefined;
+  alt: string;
+}
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-        const x = ((e.pageX - left) / width) * 100;
-        const y = ((e.pageY - top) / height) * 100;
-        setPosition({ x, y });
-    };
+interface Offset {
+  x: number;
+  y: number;
+}
 
-    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-        const img = e.currentTarget.querySelector('img');
-        if (img) {
-            setImageSize({ width: img.offsetWidth, height: img.offsetHeight });
-            setShowZoom(true);
-        }
-    };
+const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt }) => {
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
+  const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 });
+  const [start, setStart] = useState<Offset>({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-    const handleMouseLeave = () => {
-        setShowZoom(false);
-    };
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    if (e.button === 0) {
+      setStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+      setIsDragging(true);
+      e.preventDefault();
+    }
+  };
 
-    return (
-        <div
-            className="relative overflow-hidden cursor-zoom-in"
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <img src={src} alt={alt} className="w-full h-auto object-cover rounded-lg" />
-            {showZoom && (
-                <div
-                    className="absolute top-0 left-0 pointer-events-none opacity-0 group-hover:opacity-100"
-                    style={{
-                        width: `${imageSize.width * 2}px`,
-                        height: `${imageSize.height * 2}px`,
-                        backgroundImage: `url(${src})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundSize: `${imageSize.width * 2}px ${imageSize.height * 2}px`,
-                        backgroundPosition: `${position.x}% ${position.y}%`,
-                        transform: 'scale(0.5)',
-                        transformOrigin: 'top left',
-                    }}
-                ></div>
-            )}
-        </div>
-    );
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setOffset({
+        x: e.clientX - start.x,
+        y: e.clientY - start.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const toggleZoom = () => {
+    setIsZoomed(!isZoomed);
+    setOffset({ x: 0, y: 0 });
+    console.log("toggle zoom ----- ",isZoomed)
+  };
+
+  useEffect(() => {
+    if (imgRef.current) {
+      imgRef.current.style.cursor = isDragging ? 'grabbing' : 'grab';
+    }
+  }, [isDragging]);
+
+  return (
+    <div
+      style={{
+        overflow: 'hidden',
+        cursor: isZoomed ? 'zoom-out' : 'zoom-in',
+        width: isZoomed ? '100%' : '100%',
+        height: 'auto',
+        position: 'relative',
+        
+      }}
+      onClick={toggleZoom}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onContextMenu={handleContextMenu}
+    >
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        style={{
+          width: isZoomed ? '200%' : '200%',
+          height: isZoomed ? '200%' : 'auto',
+          transform: `translate(${offset.x}px, ${offset.y}px)`,
+          transition: isDragging ? 'none' : 'transform 0.3s',
+          userSelect: 'none',
+        }}
+      />
+    </div>
+  );
 };
 
 export default ZoomableImage;

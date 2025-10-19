@@ -1,18 +1,20 @@
-import { Deal } from '../../../../types/dealTypes';
-import React from 'react';
+import React from 'react'
+import { Deal } from '../../../../types/dealTypes'
+import { useNavigate } from 'react-router-dom'
 
 const DealCard = ({ deal }: { deal: Deal }) => {
+  const navigate = useNavigate();
   return (
-    <div className='cursor-pointer flex flex-col items-center bg-white rounded-lg shadow-lg overflow-hidden w-[15rem] mx-3'>
-      <div className='h-[13rem] w-[10rem]'>
-        <img className='object-cover object-top w-full h-full' src={deal.category.image} alt={deal.category.name} />
-      </div>
-      <div className='p-4'>
-        <h3 className='text-lg font-medium text-gray-900'>{deal.category.name}</h3>
-        <p className='mt-2 text-sm text-green-600 font-semibold'>{deal.discount}% Off</p>
+    <div onClick={() => navigate(`/products/${deal.category.categoryId}`)} className='w-full cursor-pointer'>
+      <img className='border-x-[7px] border-t-[7px] border-pink-600 w-full h-[12rem] object-cover object-top' src={deal.category.image} alt="" />
+      <div className='border-4 border-black bg-black text-white p-2 text-center'>
+        {/* <p className='text-lg font-semibold'>{deal.category.categoryId.split("_").join(" ")}</p> */}
+        <p className='text-2xl font-bold'>{deal.discount}% OFF</p>
+        <p className='text-balance text-lg'>shop now</p>
+
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DealCard;
+export default DealCard

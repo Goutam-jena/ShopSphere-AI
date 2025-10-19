@@ -1,14 +1,51 @@
-import React from 'react';
 
-const HomeCategoryCard = ({ item }: any) => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { HomeCategory } from '../../../../types/homeDataTypes';
+import "./HomeCategoryCard.css";
+
+
+interface HomeCategoryCardProps {
+  item: HomeCategory;
+}
+
+const HomeCategoryCard = ({ item }: HomeCategoryCardProps) => {
+  const navigate = useNavigate();
+
+ 
+  const handleNavigate = () => {
+    navigate(`/products/${item.categoryId}`);
+  };
+
   return (
-    <div className='cursor-pointer flex flex-col items-center bg-white rounded-lg shadow-lg overflow-hidden w-[15rem] mx-3'>
-      <div className='h-[13rem] w-[10rem]'>
-        <img className='object-cover object-top w-full h-full' src={item.image} alt={item.name} />
+    <div onClick={handleNavigate} className='flex gap-3 flex-col justify-center items-center group cursor-pointer'>
+      <div className='custom-border w-[150px] lg:w-[249px] h-[150px] lg:h-[249px] rounded-full bg-teal-400'>
+        {/* Added alt text using item.name for better accessibility */}
+        <img
+          className='group-hover:scale-95 transition-transform transform duration-700 object-cover object-top h-full w-full'
+          src={item.image}
+          alt={item.name || 'Category Image'}
+        />
       </div>
-      <div className='p-4'>
-        <h3 className='text-lg font-medium text-gray-900'>{item.name}</h3>
-      </div>
+      <h1 className='font-medium'>{item.name}</h1>
     </div>
   );
 };
