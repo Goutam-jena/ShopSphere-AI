@@ -1,44 +1,76 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import Home from '../customer/pages/Home/Home.tsx';
-import Auth from '../customer/pages/Auth/Auth.tsx';
-import Products from '../customer/pages/Products/Products.tsx';
-import ProductDetails from '../customer/pages/Products/ProductDetails/ProductDetails.tsx';
-import Cart from '../customer/pages/Cart/Cart.tsx'; 
-import AddressPage from '../customer/pages/Checkout/AddressPage';
+
+
+import React, { useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import Home from '../customer/pages/Home/Home';
+import Products from '../customer/pages/Products/Products';
+import ProductDetails from '../customer/pages/Products/ProductDetails/ProductDetails';
+import Cart from '../customer/pages/Cart/Cart';
+import Address from '../customer/pages/Checkout/AddressPage';
 import Profile from '../customer/pages/Account/Profile';
-import PaymentSuccessHandler from '../customer/pages/Pyement/PaymentSuccessHandler';
-import Wishlist from '../customer/pages/Wishlist/Wishlist';
+import Footer from '../customer/components/Footer/Footer';
+import Navbar from '../customer/components/Navbar/Navbar';
 import NotFound from '../customer/pages/NotFound/NotFound';
-import HomeChatBot from '../customer/pages/ChatBot/HomeChatBot';
-
-
-
+import Auth from '../customer/pages/Auth/Auth';
+import { useAppDispatch, useAppSelector } from '../Redux Toolkit/Store';
+import { fetchUserCart } from '../Redux Toolkit/Customer/CartSlice';
+import PaymentSuccessHandler from '../customer/pages/Pyement/PaymentSuccessHandler';
+import Reviews from '../customer/pages/Review/Reviews';
+import WriteReviews from '../customer/pages/Review/WriteReview';
+import Wishlist from '../customer/pages/Wishlist/Wishlist';
+import { getWishlistByUserId } from '../Redux Toolkit/Customer/WishlistSlice';
+import HomeChatBot from '../customer/pages/ChatBot/HomeChatBot'; // Import the new HomeChatBot
+import SearchProducts from '../customer/pages/Search/SearchProducts';
 
 const CustomerRoutes = () => {
+  const dispatch = useAppDispatch();
+  const { auth } = useAppSelector(store => store);
+  const location = useLocation();
 
-const location = useLocation();  
+  // This check determines if we are on a product page
   const isProductPage = location.pathname.startsWith('/product-details');
 
+  useEffect(() => {
+    if (auth.jwt) {
+      dispatch(fetchUserCart(auth.jwt));
+      dispatch(getWishlistByUserId());
+    }
+  }, [auth.jwt, dispatch]);
 
   return (
-    <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/login' element={<Auth />} />
-      <Route path='/products/:categoryId' element={<Products />} />
-      <Route path='/product-details/:categoryId/:name/:productId' element={<ProductDetails />} />
-      <Route path='/cart' element={<Cart />} /> 
+    <>
+      <Navbar />
+      <Routes>
+        {/* Your ProductDetails page will continue to use its own chatbot */}
+        <Route path='/product-details/:categoryId/:name/:productId' element={<ProductDetails />} />
 
-      <Route path='/checkout/address' element={<AddressPage />} /> 
-      <Route path='/account/*' element={<Profile />} /> 
-      <Route path='/account/*' element={<Profile />} />
-      <Route path='/payment-success/:paymentOrderId' element={<PaymentSuccessHandler />} />
-      <Route path='/wishlist' element={<Wishlist />} /> {/* Add this line */}
-      <Route path='*' element={<NotFound />} />
-       {!isProductPage && <HomeChatBot />}
-
-    </Routes>
+        {/* All other routes */}
+        <Route path='/' element={<Home />} />
+        <Route path='/products/:categoryId' element={<Products />} />
+        <Route path='/search-products' element={<SearchProducts />} />
+        <Route path='/reviews/:productId' element={<Reviews />} />
+        <Route path='/reviews/:productId/create' element={<WriteReviews />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/wishlist' element={<Wishlist />} />
+        <Route path='/checkout/address' element={<Address />} />
+        <Route path='/account/*' element={<Profile />} />
+        <Route path='/login' element={<Auth />} />
+        <Route path='/payment-success/:paymentOrderId' element={<PaymentSuccessHandler />} />
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+      
+      {/* Show the GENERAL HomeChatBot on every page EXCEPT the product page */}
+      {!isProductPage && <HomeChatBot />}
+      
+      <Footer />
+    </>
   );
 }
 
 export default CustomerRoutes;
+
+
+
+
+
+
