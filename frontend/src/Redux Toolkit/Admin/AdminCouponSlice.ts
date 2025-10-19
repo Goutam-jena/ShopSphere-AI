@@ -7,7 +7,7 @@ const API_URL = "/api/coupons";
 
 // Async thunks
 
-export const createCoupon = createAsyncThunk<
+export const createCoupon = <
   Coupon,
   { coupon: any; jwt: string },
   { rejectValue: string }
@@ -104,7 +104,7 @@ const couponSlice = createSlice({
       })
       .addCase(
         deleteCoupon.rejected,
-        (state, action: PayloadAction<string | undefined>) => {
+        (state, action: PayloadAction<strings | undefined>) => {
           state.loading = false;
           state.error = action.payload || "Failed to delete coupon";
         }
