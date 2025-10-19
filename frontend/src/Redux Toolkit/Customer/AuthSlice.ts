@@ -1,9 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AuthResponse, LoginRequest, SignupRequest, AuthState } from '../../types/authTypes';
 import { api } from '../../Config/Api';
+import { resetUserState } from './UserSlice';
+import { resetCartState } from './CartSlice';
 
 const initialState: AuthState = {
-    jwt: localStorage.getItem("jwt"),
+    jwt: null,
     role: null,
     loading: false,
     error: null,
@@ -12,39 +14,45 @@ const initialState: AuthState = {
 
 const API_URL = '/auth';
 
-export const sendLoginSignupOtp = createAsyncThunk('auth/sendLoginSignupOtp',
+export const sendLoginSignupOtp = createAsyncThunk(
+    'auth/sendLoginSignupOtp',
     async ({ email }: { email: string }, { rejectWithValue }) => {
-    try {
-        const response = await api.post(`${API_URL}/sent/login-signup-otp`, { email });
-        return response.data;
-    } catch (error: any) {
-        return rejectWithValue(error.response.data.error || 'Failed to send OTP');
+        try {
+            const response = await api.post(`${API_URL}/sent/login-signup-otp`, { email });
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.error || 'Failed to send OTP');
+        }
     }
-});
+);
 
-export const signup = createAsyncThunk<AuthResponse, SignupRequest>('auth/signup',
+export const signup = createAsyncThunk<AuthResponse, SignupRequest>(
+    'auth/signup',
     async (signupRequest, { rejectWithValue }) => {
-    try {
-        const response = await api.post<AuthResponse>(`${API_URL}/signup`, signupRequest);
-        signupRequest.navigate("/");
-        localStorage.setItem("jwt", response.data.jwt);
-        return response.data;
-    } catch (error: any) {
-        return rejectWithValue('Signup failed');
+        try {
+            const response = await api.post<AuthResponse>(`${API_URL}/signup`, signupRequest);
+            localStorage.setItem("jwt", response.data.jwt);
+            signupRequest.navigate("/");
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.error || 'Signup failed');
+        }
     }
-});
+);
 
-export const signin = createAsyncThunk<AuthResponse, LoginRequest>('auth/signin',
+export const signin = createAsyncThunk<AuthResponse, LoginRequest>(
+    'auth/signin',
     async (loginRequest, { rejectWithValue }) => {
-    try {
-        const response = await api.post<AuthResponse>(`${API_URL}/signin`, loginRequest);
-        localStorage.setItem("jwt", response.data.jwt);
-        loginRequest.navigate("/");
-        return response.data;
-    } catch (error: any) {
-        return rejectWithValue('Signin failed');
+        try {
+            const response = await api.post<AuthResponse>(`${API_URL}/signin`, loginRequest);
+            localStorage.setItem("jwt", response.data.jwt);
+            loginRequest.navigate("/");
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.error || 'Signin failed');
+        }
     }
-});
+);
 
 const authSlice = createSlice({
     name: 'auth',
@@ -101,3 +109,9 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
+
+export const performLogout = () => (dispatch: any) => {
+    dispatch(logout());
+    dispatch(resetUserState());
+    dispatch(resetCartState());
+};

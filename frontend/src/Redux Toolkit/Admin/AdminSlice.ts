@@ -15,7 +15,7 @@ export const updateHomeCategory = createAsyncThunk<HomeCategory, { id: number; d
         console.log("errror ",error)
       if (error.response && error.response.data) {
         
-        return rejectWithValue(error.response.data);  
+        return rejectWithValue(error.response.data);  // Return error response data if available
       } else {
         return rejectWithValue('An error occurred while updating the category.');
       }
@@ -57,16 +57,17 @@ const homeCategorySlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    
+    // Handle the pending state for updateHomeCategory
     builder.addCase(updateHomeCategory.pending, (state) => {
       state.loading = true;
       state.error = null;
       state.categoryUpdated = false;
     });
 
+    // Handle the fulfilled state for updateHomeCategory
     builder.addCase(updateHomeCategory.fulfilled, (state, action) => {
       state.loading = false;
-      state.categoryUpdated = true;  
+      state.categoryUpdated = true;  // Set categoryUpdated flag to true
       // Find the category by ID and update it in the state
       const index = state.categories.findIndex((category) => category._id === action.payload._id);
       if (index !== -1) {
