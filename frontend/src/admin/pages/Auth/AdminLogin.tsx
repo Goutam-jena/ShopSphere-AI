@@ -1,58 +1,150 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { TextField, Button, CircularProgress } from '@mui/material';
+import { Alert, Button, CircularProgress, Snackbar, TextField } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { FormikValues, useFormik } from 'formik';
+import { useDispatch } from 'react-redux';
 import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
-import { signin } from '../../../Redux Toolkit/Customer/AuthSlice';
+import { sendLoginOtp, verifyLoginOtp } from '../../../Redux Toolkit/Seller/sellerAuthenticationSlice';
 import { useNavigate } from 'react-router-dom';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { sendLoginSignupOtp, signin } from '../../../Redux Toolkit/Customer/AuthSlice';
+import OTPInput from '../../../customer/components/OtpFild/OTPInput';
 
-const validationSchema = Yup.object({
-  email: Yup.string().email('Invalid email address').required('Email is required'),
-  password: Yup.string().required('Password is required'),
-});
+const AdminLoginForm = () => {
 
-const AdminLogin = () => {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { auth } = useAppSelector(state => state);
+    const [otp, setOtp] = useState("");
+    const [isOtpSent, setIsOtpSent] = useState(false)
+    const [timer, setTimer] = useState<number>(30); // Timer state
+    const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
+    const { auth } = useAppSelector(store => store)
 
     const formik = useFormik({
-        initialValues: { email: '', password: '' },
-        validationSchema,
-        onSubmit: (values) => {
-            
-            console.log("Admin login attempt with:", values);
-            
+        initialValues: {
+            email: '',
+            otp: ''
         },
+
+        onSubmit: (values: any) => {
+            // Handle form submission
+            dispatch(signin({ email: values.email, otp, navigate }))
+            console.log('Form data:', values);
+        }
     });
 
-    return (
-        <form onSubmit={formik.handleSubmit} className="space-y-4">
-            <h1 className='text-xl text-center font-bold'>Admin Login</h1>
-            <TextField
-                fullWidth
-                name="email"
-                label="Email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-            />
-            <TextField
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                error={formik.touched.password && Boolean(formik.errors.password)}
-                helperText={formik.touched.password && formik.errors.password}
-            />
-            <Button fullWidth type="submit" variant="contained" disabled={auth.loading}>
-                {auth.loading ? <CircularProgress size={24} /> : 'Login'}
-            </Button>
-        </form>
-    );
-};
+    const handleOtpChange = (otp: any) => {
 
-export default AdminLogin;
+        setOtp(otp);
+
+    };
+
+    const handleResendOTP = () => {
+        // Implement OTP resend logic
+        dispatch(sendLoginSignupOtp({ email: "signing_"+formik.values.email }))
+        console.log('Resend OTP');
+        setTimer(30);
+        setIsTimerActive(true);
+    };
+
+    const handleSentOtp = () => {
+        setIsOtpSent(true);
+        handleResendOTP();
+    }
+
+    const handleLogin = () => {
+        formik.handleSubmit()
+    }
+
+  
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout | undefined;
+
+        if (isTimerActive) {
+            interval = setInterval(() => {
+                setTimer(prev => {
+                    if (prev === 1) {
+                        clearInterval(interval);
+                        setIsTimerActive(false);
+                        return 30; // Reset timer for next OTP request
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isTimerActive]);
+
+
+
+    return (
+        <div>
+            <h1 className='text-center font-bold text-xl text-primary-color pb-8'>Login</h1>
+            <form className="space-y-5">
+
+                <TextField
+                    fullWidth
+                    name="email"
+                    label="Enter Your Email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email ? formik.errors.email as string : undefined}
+                />
+
+                {auth.otpSent && <div className="space-y-2">
+                    <p className="font-medium text-sm">
+                        * Enter OTP sent to your mobile number
+                    </p>
+                    <OTPInput
+                        length={6}
+                        onChange={handleOtpChange}
+                        error={false}
+                    />
+                    <p className="text-xs space-x-2">
+                        {isTimerActive ? (
+                            <span>Resend OTP in {timer} seconds</span>
+                        ) : (
+                            <>
+                                Didn’t receive OTP?{" "}
+                                <span
+                                    onClick={handleResendOTP}
+                                    className="text-teal-600 cursor-pointer hover:text-teal-800 font-semibold"
+                                >
+                                    Resend OTP
+                                </span>
+                            </>
+                        )}
+                    </p>
+                    {formik.touched.otp && formik.errors.otp && <p>{formik.errors.otp as string}</p>}
+                </div>}
+
+                {auth.otpSent && <div>
+                    <Button disabled={auth.loading} onClick={handleLogin}
+                        fullWidth variant='contained' sx={{ py: "11px" }}>{
+                            auth.loading ? <CircularProgress  />: "Login"}</Button>
+                </div>}
+
+                {!auth.otpSent && <Button
+                disabled={auth.loading}
+                    fullWidth
+                    variant='contained'
+                    onClick={handleSentOtp}
+                    sx={{ py: "11px" }}>{
+                        auth.loading ? <CircularProgress  />: "sent otp"}</Button>
+                }
+
+
+
+            </form>
+
+         
+        </div>
+    )
+}
+
+export default AdminLoginForm

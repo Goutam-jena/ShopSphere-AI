@@ -12,10 +12,10 @@ const CreateDealForm = () => {
       discount: 0,
       category: "",
     },
-    // validationSchema: validationSchema,
+    
     onSubmit: (values) => {
 
-      // console.log("Form Data -- :", values);
+      
       dispatch(createDeal({
         discount: values.discount, 
         category: {
