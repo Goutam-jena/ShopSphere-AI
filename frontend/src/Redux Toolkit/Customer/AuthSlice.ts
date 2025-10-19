@@ -74,7 +74,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.otpSent = true;
             })
-            .addCase(sendLoginSignupOtp.rsejected, (state, action) => {
+            .addCase(sendLoginSignupOtp.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
@@ -113,5 +113,5 @@ export default authSlice.reducer;
 export const performLogout = () => (dispatch: any) => {
     dispatch(logout());
     dispatch(resetUserState());
-    dispatch(resetCartState(logout));
+    dispatch(resetCartState());
 };
