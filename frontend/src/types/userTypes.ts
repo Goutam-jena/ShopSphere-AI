@@ -1,3 +1,24 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export interface Address {
     _id?: number;
     name: string;
@@ -8,11 +29,13 @@ export interface Address {
     city: string;
     state: string;
 }
+
 export enum UserRole {
     ROLE_CUSTOMER = 'ROLE_CUSTOMER',
     ROLE_ADMIN = 'ROLE_ADMIN',
     ROLE_SELLER = 'ROLE_SELLER',
 }
+
 export interface User {
     _id?: number;
     password?: string;
@@ -21,11 +44,16 @@ export interface User {
     mobile?: string;
     role: UserRole;
     addresses?: Address[];
+
+    // --- THIS IS THE FIX ---
+    // Add the profilePic property to match the backend model
     profilePic?: {
         url: string;
         public_id: string;
     };
+    // --- END OF FIX ---
 }
+
 export interface UserState {
     user: User | null;
     loading: boolean;

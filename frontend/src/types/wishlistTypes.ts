@@ -12,3 +12,9 @@ export interface WishlistState {
   loading: boolean;
   error: string | null;
 }
+
+// Payload interfaces for async thunks
+export interface AddProductToWishlistPayload {
+  wishlistId: number;
+  productId: number;
+}

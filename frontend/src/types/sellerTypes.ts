@@ -1,13 +1,4 @@
-
-// export interface Seller {
-//   _id?: number;
-//   sellerName: string;
-//   businessDetails?: {
-//     businessName?: string;
-//   };
-// }
-
-
+// src/types/seller.ts
 
 export interface PickupAddress {
     name: string;
@@ -18,15 +9,18 @@ export interface PickupAddress {
     city: string;
     state: string;
 }
+
 export interface BankDetails {
     accountNumber: string;
     ifscCode: string;
     accountHolderName: string;
 }
+
 export interface BusinessDetails {
     businessName: string;
 }
-export interface eller {
+
+export interface Seller {
     _id?:number;
     mobile: string;
     otp: string;
@@ -39,3 +33,17 @@ export interface eller {
     password: string;
     accountStatus?:string;
 }
+
+export interface SellerReport {
+    _id: number;
+    seller: Seller;
+    totalEarnings: number;
+    totalSales: number;
+    totalRefunds: number;
+    totalTax: number;
+    netEarnings: number;
+    totalOrders: number;
+    canceledOrders: number;
+    totalTransactions: number;
+  }
+  

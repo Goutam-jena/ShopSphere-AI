@@ -17,13 +17,13 @@ export interface Review {
   updatedAt: string;
 }
 
-
+// --- THIS IS THE CORRECTED INTERFACE ---
 export interface CreateReviewRequest {
   reviewText: string;
-  rating: number; 
-  productImages?: string[]; 
+  rating: number; // Corrected from reviewRating
+  productImages?: string[]; // Added this optional field
 }
-
+// --- END OF CORRECTION ---
 
 export interface ApiResponse {
   message: string;

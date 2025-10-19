@@ -1,6 +1,9 @@
+
+
+
 export const uploadToCloudinary = async (pics: any) => {
-  const cloud_name = "dyecbtgbu"; 
-  const upload_preset = "shopsphere2"; 
+  const cloud_name = "dyecbtgbu"; // ✅ Your Cloudinary cloud name
+  const upload_preset = "shopsphere2"; // ✅ Your Cloudinary upload preset
 
   if (!pics) {
     console.log("No picture selected for upload.");
@@ -21,7 +24,7 @@ export const uploadToCloudinary = async (pics: any) => {
     const fileData = await res.json();
     console.log("Cloudinary Upload Response:", fileData);
 
-  
+    // ✅ Return full object (contains url + secure_url + public_id etc.)
     return fileData;
 
   } catch (error) {
@@ -29,3 +32,4 @@ export const uploadToCloudinary = async (pics: any) => {
     return null;
   }
 };
+

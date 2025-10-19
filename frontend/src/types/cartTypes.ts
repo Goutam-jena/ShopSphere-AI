@@ -12,6 +12,7 @@ export interface CartItem {
     user_id: number;
 }
 
+
 export interface Cart {
     _id: number;
     user: User;
