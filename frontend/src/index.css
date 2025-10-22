@@ -1,3 +1,114 @@
+/* These three lines MUST come first */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary-color: #00927c;
+  --secondary-color: #2ecc71;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+
+
+
+
+
+.logo {
+  /* Your existing font styles */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  
+  /* Add this line to apply the animation */
+  animation: fadeInLogo 1.5s ease-in-out;
+}
+
+/* Add this block at the end of your index.css file */
+@keyframes fadeInLogo {
+  from {
+    opacity: 0;
+    transform: translateY(-10px); 
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+.blur-bg {
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+}
+
+.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper {
+  box-shadow: rgba(225, 225, 225, 0.24) 0px 3px 8px !important;
+}
+
+
+
+.active-profile-link {
+  background-color: #00927c !important;
+  color: white !important;
+}
+
+
+
+
+
+//* Dot container */
+.banner-slider .slick-dots {
+    position: relative;
+    bottom: 0;
+    margin-top: 6px;
+    display: flex !important;
+    justify-content: center;
+}
+
+/* Dot pill style */
+.banner-slider .slick-dots li button:before {
+    content: '';
+    width: 18px;
+    height: 5px;
+    border-radius: 3px;
+    background-color: #cbd5e1; /* light grey */
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+/* Active dot */
+.banner-slider .slick-dots li.slick-active button:before {
+    background-color: #2874f0; /* Flipkart blue */
+}
+
+/* Remove after animation */
+.banner-slider .slick-dots li.slick-active button:after {
+    display: none;
+}
+
+
+.active-sidebar-link {
+  background-color: #00927c !important; 
+  color: white !important;
+}
+
+
+.active-sidebar-link .MuiListItemIcon-root {
+  color: white !important;
+}
+
+
+
+
+
