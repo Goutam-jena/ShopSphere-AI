@@ -29,7 +29,7 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
             question: prompt
         }));
 
-        setPrompt(""); // <-- FIX 1: Add this line to clear the input state
+        setPrompt(""); 
     };
 
     const handlePromptChange = (e: any) => {

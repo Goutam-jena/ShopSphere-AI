@@ -43,6 +43,7 @@ const PricingCard = ({ showBuyButton, SubmitButton }: any) => {
     </div>
   );
  };
-
+//  sumCartItemSellingPrice(cart.cart?.cartItems || [])
+// sumCartItemMrpPrice(cart.cart?.cartItems || [])
 
 export default PricingCard;
