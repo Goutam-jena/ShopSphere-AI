@@ -13,14 +13,3 @@ export default function GridTable() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
