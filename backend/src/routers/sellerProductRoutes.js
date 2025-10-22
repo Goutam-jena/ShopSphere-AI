@@ -21,7 +21,7 @@ router.delete(
   productController.deleteProduct
 );
 
-// Update a product
+
 router.patch(
   "/:productId",
   sellerAuthMiddleware,

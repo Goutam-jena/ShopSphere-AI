@@ -22,7 +22,6 @@ class DealService {
     }
   }
 
-  // Update an existing deal
   async updateDeal(deal, id) {
     const existingDeal = await Deal.findById(id).populate({ path: "category" });
 
@@ -40,12 +39,12 @@ class DealService {
 
   // Delete an existing deal
   async deleteDeal(id) {
-    const deal = await Deal.findById(id); // Fetch the deal by ID
+    const deal = await Deal.findById(id); 
     if (!deal) {
-      throw new Error("Deal not found"); // Throw an error if deal not found
+      throw new Error("Deal not found"); 
     }
-    await Deal.deleteOne({ _id: id }); // Delete the deal by ID
+    await Deal.deleteOne({ _id: id }); 
   }
 }
 
-module.exports = new DealService(); // Exporting an instance of DealService
+module.exports = new DealService(); 

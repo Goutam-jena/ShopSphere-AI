@@ -1,10 +1,14 @@
+const jwt = require("jsonwebtoken");
 const UserService = require("../services/UserService");
+const jwtProvider = require("../utils/jwtProvider");
 
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
     if (!authHeader) {
-      return res.status(401).json({ message: "Authorization header is missing" });
+      return res
+        .status(401)
+        .json({ message: "Authorization header is missing" });
     }
 
     const token = authHeader.split(" ")[1];
@@ -18,6 +22,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     req.user = user;
+
     next();
   } catch (error) {
     console.error("Error in authentication middleware: ", error.message);

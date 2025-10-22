@@ -4,6 +4,7 @@ const userController = require('../controllers/userController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 router.get('/profile', authMiddleware, userController.getUserProfileByJwt);
+
 router.patch('/profile/picture', authMiddleware, userController.updateUserProfilePicture);
 
 module.exports = router;

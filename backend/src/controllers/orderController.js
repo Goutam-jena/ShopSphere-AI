@@ -1,42 +1,83 @@
+
+
 const OrderService = require("../services/OrderService");
 const CartService = require("../services/CartService");
+const UserService = require("../services/UserService");
+const OrderError = require("../exceptions/OrderError");
+const PaymentMethod = require("../domain/PaymentMethod");
 const PaymentService = require("../services/PaymentService");
+const PaymentOrder = require("../models/PaymentOrder");
 
 class OrderController {
-  async createOrder(req, res) {
+
+ 
+  async createOrder(req, res, next) {
     const { shippingAddress } = req.body;
+    const { paymentMethod } = req.query;
+    const jwt = req.headers.authorization;
+
     try {
       const user = await req.user;
       const cart = await CartService.findUserCart(user);
       const orders = await OrderService.createOrder(user, shippingAddress, cart);
+      const paymentOrder = await PaymentService.createOrder(user, orders);
+      const response = {};
 
-      const paymentOrder = await PaymentService.createPaymentOrder(user, orders);
-
+      
       if (paymentOrder.amount < 1) {
-        throw new Error(`The total order amount must be at least ₹1.`);
+        
+        throw new Error(`The total order amount must be at least ₹1. Your order total is ₹${paymentOrder.amount}.`);
+      }
+    
+
+      console.log("rresponse ", response, paymentMethod, "--", PaymentMethod.RAZORPAY, "--", paymentMethod === PaymentMethod.RAZORPAY);
+
+      if (paymentMethod === PaymentMethod.RAZORPAY) {
+        const payment = await PaymentService.createRazorpayPaymentLink(user, paymentOrder.amount, paymentOrder._id);
+        const paymentUrl = payment.short_url;
+        const paymentUrlId = payment.id;
+
+        response.payment_link_url = paymentUrl;
+
+        paymentOrder.paymentLinkId = paymentUrlId;
+        await PaymentOrder.findByIdAndUpdate(paymentOrder._id, paymentOrder);
+        console.log('payment -- ', payment);
+
+      } else if (paymentMethod === PaymentMethod.STRIPE) {
+        const paymentUrl = await PaymentService.createStripePaymentLink(user, paymentOrder.amount, paymentOrder._id);
+        response.payment_link_url = paymentUrl;
       }
 
-      const paymentLink = await PaymentService.createRazorpayPaymentLink(
-        user,
-        paymentOrder.amount,
-        paymentOrder._id
-      );
+      return res.status(200).json(response);
 
-      paymentOrder.paymentLinkId = paymentLink.id;
-      await paymentOrder.save();
-
-      return res.status(200).json({
-        message: "Order created successfully",
-        orders,
-        payment_link_url: paymentLink.short_url,
-      });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ message: `Error creating order: ${error.message}` });
+      console.log("error in createOrder controller: ", error);
+      return res.status(500).json({ message: `Error creating order: ${error.message}` });
     }
   }
 
+  // Get order by ID
+  async getOrderById(req, res, next) {
+    try {
+      const { orderId } = req.params;
+      const order = await OrderService.findOrderById(orderId);
+      return res.status(200).json(order);
+    } catch (error) {
+      return res.status(401).json({ error: error.message });
+    }
+  }
+
+  async getOrderItemById(req, res, next) {
+    try {
+      const { orderItemId } = req.params;
+      const orderItem = await OrderService.findOrderItemById(orderItemId);
+      return res.status(200).json(orderItem);
+    } catch (error) {
+      return res.status(401).json({ error: error.message });
+    }
+  }
+
+  
   async getUserOrderHistory(req, res) {
     try {
       const userId = await req.user._id;
@@ -47,7 +88,6 @@ class OrderController {
     }
   }
 
-  
   async getSellersOrders(req, res) {
     try {
       const sellerId = req.seller._id;
@@ -58,6 +98,7 @@ class OrderController {
     }
   }
 
+ 
   async updateOrderStatus(req, res) {
     try {
       const { orderId, orderStatus } = req.params;
@@ -70,6 +111,21 @@ class OrderController {
       return res.status(401).json({ error: error.message });
     }
   }
+
+  async cancelOrder(req, res, next) {
+    try {
+      const { orderId } = req.params;
+      const userId = req.user._id;
+      const canceledOrder = await OrderService.cancelOrder(orderId, userId);
+      return res.status(200).json({
+        message: "Order cancelled successfully",
+        order: canceledOrder,
+      });
+    } catch (error) {
+      return res.status(401).json({ error: error.message });
+    }
+  }
+
 
   async deleteOrder(req, res, next) {
     try {

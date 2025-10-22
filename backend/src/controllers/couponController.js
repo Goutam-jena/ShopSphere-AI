@@ -1,37 +1,55 @@
 const couponService = require("../services/CouponService");
+const UserService = require("../services/UserService");
 
-class CouponController {
-    
-    async applyCoupon(req, res) {
-       
-    }
+class couponController {
+  async applyCoupon(req, res) {
+    try {
+      const { apply, code, orderValue } = req.body;
 
-   
-    async createCoupon(req, res) {
-        try {
-            const coupon = await couponService.createCoupon(req.body);
-            return res.status(201).json(coupon);
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    }
+      const user = await req.useeer
+      let cart;
 
-    async deleteCoupon(req, res) {
-        try {
-            await couponService.deleteCoupon(req.params.id);
-            return res.status(200).json({ message: "Coupon deleted successfully" });
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    }
+      if (apply === "true") {
+        cart = await couponService.applyCoupon(code, orderValue, user);
+      } else {
+        cart = await couponService.removeCoupon(code, user);
+      }
 
-    async getAllCoupons(req, res) {
-        try {
-            const coupons = await couponService.getAllCoupons();
-            return res.status(200).json(coupons);
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
+      return res.status(200).json(cart);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
+  }
+
+  // Create a coupon (admin)
+  async createCoupon(req, res) {
+    try {
+      const coupon = await couponService.createCoupon(req.body);
+      return res.status(200).json(coupon);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+
+  async deleteCoupon(req, res) {
+    try {
+      await couponService.deleteCoupon(req.params.id);
+      return res.status(200).json({ message: "Coupon deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getAllCoupons(req, res) {
+    try {
+      const coupons = await couponService.getAllCoupons();
+      return res.status(200).json(coupons);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
-module.exports = new CouponController();
+
+
+module.exports = new couponController();

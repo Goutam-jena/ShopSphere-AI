@@ -1,115 +1,100 @@
+// index.js
 require('dotenv').config();
 const express = require('express');
-const connectDB = require('./config/db.js');
 const cors = require('cors');
+const connectDB = require('./config/db.js');
+
+// Import routers
+const productRoutes = require('./routers/productRoutes.js');
+const authRoutes = require('./routers/authRouters.js');
+const adminRoutes = require('./routers/adminRouters.js');
+const cartRoutes = require('./routers/CartRoutes.js');
+const revenueRoutes = require('./routers/revenueRoutes.js');
+const sellerOrderRoutes = require('./routers/sellerOrderRoutes.js');
+const sellerProductRoutes = require('./routers/sellerProductRoutes.js');
+const sellerReportRoutes = require('./routers/sellerReportRoutes.js');
+const sellerRoutes = require('./routers/sellerRoutes.js');
+const transactionRoutes = require('./routers/transactionRoutes.js');
+const userRoutes = require('./routers/userRoutes.js');
+const wishlistRoutes = require('./routers/wishlistRoutes.js');
+const orderRoutes = require('./routers/orderRoutes.js');
+const paymentRoutes = require('./routers/paymentRoutes.js');
+const dealRoutes = require('./routers/dealRoutes.js');
+const couponRoutes = require('./routers/couponRoutes.js');
+const homeRoutes = require('./routers/homeCategoryRoutes.js');
+const chatbotRoutes = require('./routers/chatboatRoutes.js');
+const reviewRoutes = require('./routers/reviewRouters.js');
 
 const app = express();
-const port = 4000;
 
-// Middleware
+// --- Middleware ---
 app.use(express.json());
-app.use(cors());
 
-// Routers
-const productRouters = require("./routers/productRoutes.js");
-const authRouters = require("./routers/authRouters.js");
-const adminRouters = require("./routers/adminRouters.js");
-const cartRouters = require("./routers/cartRoutes.js");
-const revenueRouters = require("./routers/revenueRoutes.js");
-const sellerOrderRouters = require("./routers/sellerOrderRoutes.js");
-const sellerProductRouters = require("./routers/sellerProductRoutes.js");
-const sellerReportRouters = require("./routers/sellerReportRoutes.js");
-const sellerRouters = require("./routers/sellerRoutes.js");
-const transactionRouters = require("./routers/transactionRoutes.js");
-const userRouters = require("./routers/userRoutes.js");
-const wishlistRouters = require("./routers/wishlistRoutes.js");
-const orderRouters = require("./routers/orderRoutes.js");
-const paymentRouters = require("./routers/paymentRoutes.js");
-const dealRouters = require("./routers/dealRoutes.js");
-const couponRouters = require("./routers/couponRoutes.js");
-const homeRouters = require("./routers/homeCategoryRoutes.js");
-const chatboatRouters = require("./routers/chatboatRoutes.js");
-const reviewRouters = require("./routers/reviewRouters.js");
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173', // local dev
+  process.env.CLIENT_URL   // frontend URL from environment variables
+];
 
-// Root route
-app.get("/", (req, res) => {
-    res.send({ message: "Welcome to ShopSphere" });
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (!allowedOrigins.includes(origin)) {
+      return callback(new Error('CORS policy does not allow access from this origin'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
+// --- Public Route ---
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to ShopSphere' });
 });
 
-// Use Routers
-app.use('/auth', authRouters);
-app.use("/api/users", userRouters);
-app.use("/sellers", sellerRouters);
-app.use("/products", productRouters);
-app.use("/api/sellers/product", sellerProductRouters);
-app.use("/api/cart", cartRouters);
-app.use("/api/orders", orderRouters);
-app.use("/api/seller/orders", sellerOrderRouters);
-app.use("/api/transactions", transactionRouters);
-app.use("/api/wishlist", wishlistRouters);
-app.use("/api/sellers/report", sellerReportRouters);
-app.use("/api/payment", paymentRouters);
-app.use("/home", homeRouters);
-app.use("/admin/deals", dealRouters);
-app.use("/admin", adminRouters);
-app.use("/api/coupons", couponRouters);
-app.use("/api/sellers/revenue", revenueRouters);
-app.use("/api/reviews", reviewRouters);
-app.use("/chat", chatboatRouters);
+// --- Routers ---
+app.use('/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/sellers', sellerRoutes);
+app.use('/products', productRoutes);
+app.use('/api/sellers/product', sellerProductRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/seller/orders', sellerOrderRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/sellers/report', sellerReportRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/home', homeRoutes);
+app.use('/admin/deals', dealRoutes);
+app.use('/admin', adminRoutes);
+app.use('/api/coupons', couponRoutes);
+app.use('/api/sellers/revenue', revenueRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/chat', chatbotRoutes);
 
-// Start Server with proper error handling
+// --- Centralized Error Handler ---
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || 'An unexpected error occurred.'
+  });
+});
+
+// --- Start Server AFTER DB connection ---
 const startServer = async () => {
-    try {
-        await connectDB();
-        app.listen(port, () => {
-            console.log(`Server is running on http://localhost:${port}`);
-        });
-    } catch (error) {
-        console.error(" Failed to connect to the database. Server is not starting.", error);
-        process.exit(1);
-    }
+  try {
+    await connectDB();
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ Failed to connect to DB:', err.message);
+    process.exit(1);
+  }
 };
 
 startServer();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

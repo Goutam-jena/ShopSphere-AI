@@ -1,3 +1,5 @@
+
+
 const mongoose = require("mongoose");
 const UserRoles = require("../domain/UserRole");
 
@@ -25,10 +27,12 @@ const userSchema = new mongoose.Schema(
       enum: [UserRoles.CUSTOMER, UserRoles.SELLER, UserRoles.ADMIN],
       default: UserRoles.CUSTOMER,
     },
+    // --- ADD THIS OBJECT ---
     profilePic: {
       url: { type: String, default: "" },
       public_id: { type: String, default: "" },
     },
+    // --- END OF ADDITION ---
     addresses: [
       {
         type: mongoose.Schema.Types.ObjectId,

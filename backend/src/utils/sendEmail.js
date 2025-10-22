@@ -1,15 +1,22 @@
+
+
+
+
+
 const nodemailer = require('nodemailer');
 
 async function sendVerificationEmail(to, subject, text) {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: 'gmail', 
         auth: {
+           
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            pass: process.env.EMAIL_PASS 
         }
     });
 
     const mailOptions = {
+       
         from: process.env.EMAIL_USER,
         to,
         subject,
@@ -20,3 +27,13 @@ async function sendVerificationEmail(to, subject, text) {
 }
 
 module.exports = { sendVerificationEmail };
+
+
+
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-// utils/JwtProvider.js
+
 const jwt = require('jsonwebtoken');
 const SECERET_KEY=process.env.SECRET_KEY
 class JwtProvider {
@@ -6,6 +6,7 @@ class JwtProvider {
         this.secretKey = secretKey;
     }
 
+  
     createJwt(payload) {
         return jwt.sign(payload, this.secretKey, { expiresIn: '24h' }); 
     }

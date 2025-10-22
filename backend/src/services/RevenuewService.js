@@ -8,15 +8,14 @@ class RevenueService {
     return startOfDay;
   }
 
-  // Helper function to get the end of a day
+  
   getEndOfDay(date) {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     return endOfDay;
   }
 
-  // Helper function to format the date
-  formatDate(date) {
+   formatDate(date) {
     return date.toISOString().split('T')[0]; // Format as "YYYY-MM-DD"
   }
 
