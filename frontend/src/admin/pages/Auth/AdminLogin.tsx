@@ -14,7 +14,7 @@ const AdminLoginForm = () => {
     const navigate = useNavigate();
     const [otp, setOtp] = useState("");
     const [isOtpSent, setIsOtpSent] = useState(false)
-    const [timer, setTimer] = useState<number>(30); // Timer state
+    const [timer, setTimer] = useState<number>(30); 
     const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const { auth } = useAppSelector(store => store)
@@ -26,7 +26,7 @@ const AdminLoginForm = () => {
         },
 
         onSubmit: (values: any) => {
-            // Handle form submission
+            
             dispatch(signin({ email: values.email, otp, navigate }))
             console.log('Form data:', values);
         }

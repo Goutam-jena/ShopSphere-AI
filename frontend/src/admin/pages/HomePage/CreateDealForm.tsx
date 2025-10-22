@@ -12,10 +12,10 @@ const CreateDealForm = () => {
       discount: 0,
       category: "",
     },
-    
+  
     onSubmit: (values) => {
 
-      
+    
       dispatch(createDeal({
         discount: values.discount, 
         category: {
